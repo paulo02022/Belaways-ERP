@@ -1,0 +1,24 @@
+
+> @belaways/backend@1.0.0 sync:shopify:catalog
+> tsx src/scripts/sync-shopify-catalog-data.ts
+
+buybrazil10 pagina 1 | produtos 248
+buybrazil10 pagina 2 | produtos 496
+buybrazil10 pagina 3 | produtos 746
+buybrazil10 pagina 4 | produtos 970
+Produtos no cache para cruzar: 814
+Produtos no catalogo Shopify: 970
+Shopify catalog atualizados 50 | imagens 0 | pulados 67
+Shopify catalog atualizados 100 | imagens 5 | pulados 184
+Shopify catalog atualizados 150 | imagens 11 | pulados 205
+Shopify catalog atualizados 200 | imagens 36 | pulados 231
+Shopify catalog atualizados 250 | imagens 65 | pulados 312
+Shopify catalog atualizados 300 | imagens 115 | pulados 355
+{
+  "cachedProducts": 814,
+  "catalog": 970,
+  "matched": 341,
+  "updated": 341,
+  "withImage": 156,
+  "skipped": 473
+}

@@ -1,0 +1,5 @@
+
+> @belaways/backend@1.0.0 sync:shopify
+> tsx src/scripts/sync-shopify-product-data.ts
+
+Produtos para enriquecer via Shopify: 841

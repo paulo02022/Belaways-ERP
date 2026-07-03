@@ -1,0 +1,30 @@
+
+> @belaways/backend@1.0.0 sync:storefront:catalog
+> tsx src/scripts/sync-storefront-catalog-products.ts
+
+Catalogo paginas 24/700 | fila 197 | produtos 0
+Catalogo paginas 48/700 | fila 173 | produtos 0
+Catalogo paginas 72/700 | fila 149 | produtos 0
+Catalogo paginas 96/700 | fila 125 | produtos 0
+Catalogo paginas 120/700 | fila 104 | produtos 47
+Catalogo paginas 144/700 | fila 85 | produtos 83
+Catalogo paginas 168/700 | fila 66 | produtos 96
+Catalogo paginas 192/700 | fila 44 | produtos 99
+Catalogo paginas 216/700 | fila 20 | produtos 99
+Catalogo paginas 236/700 | fila 7 | produtos 138
+Catalogo paginas 243/700 | fila 13 | produtos 140
+Catalogo paginas 256/700 | fila 4 | produtos 140
+Catalogo paginas 260/700 | fila 0 | produtos 140
+Produtos no cache: 1518
+Produtos achados no catalogo: 140
+{
+  "pages": 260,
+  "catalogProducts": 140,
+  "cachedProducts": 1518,
+  "matched": 139,
+  "byReference": 96,
+  "byName": 43,
+  "updated": 139,
+  "imagesAdded": 6,
+  "skipped": 1
+}

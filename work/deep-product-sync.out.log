@@ -1,0 +1,9 @@
+
+> @belaways/backend@1.0.0 sync:products
+> tsx src/scripts/sync-products.ts
+
+Carregando lista de produtos do Tiny...
+Produtos encontrados: 1518
+Resumo inicial salvo no Supabase.
+Produtos pendentes de enriquecimento: 1508
+Sincronizados 25/1508 | imagens 19 | estoque 25 | falhas 0 | 93s

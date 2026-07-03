@@ -1,0 +1,8 @@
+Tiny bloqueou detalhes. Aguardando 90s...
+npm error Lifecycle script `sync:details` failed with error:
+npm error code 4294967295
+npm error path C:\Users\PCZIN\Desktop\projetos-uso\Belaways ERP\backend
+npm error workspace @belaways/backend@1.0.0
+npm error location C:\Users\PCZIN\Desktop\projetos-uso\Belaways ERP\backend
+npm error command failed
+npm error command C:\Windows\system32\cmd.exe /d /s /c tsx src/scripts/sync-product-details-missing.ts

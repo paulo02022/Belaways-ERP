@@ -1,0 +1,10 @@
+
+> @belaways/backend@1.0.0 sync:details
+> tsx src/scripts/sync-product-details-missing.ts
+
+Produtos no cache: 1518
+Produtos pendentes de detalhes: 417
+Shard: 2/3
+Detalhes 25/417 | atualizados 25 | falhas 0 | 43s
+Detalhes 50/417 | atualizados 50 | falhas 0 | 205s
+Detalhes 75/417 | atualizados 75 | falhas 0 | 305s

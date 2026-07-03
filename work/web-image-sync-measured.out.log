@@ -1,0 +1,24 @@
+
+> @belaways/backend@1.0.0 sync:web-images
+> tsx src/scripts/sync-web-product-images.ts
+
+Produtos sem imagem para busca web: 291
+Web imagens 25/291 | atualizadas 10 | puladas 15 | falhas 0
+Web imagens 50/291 | atualizadas 34 | puladas 16 | falhas 0
+Web imagens 75/291 | atualizadas 59 | puladas 16 | falhas 0
+Web imagens 100/291 | atualizadas 84 | puladas 16 | falhas 0
+Web imagens 125/291 | atualizadas 109 | puladas 16 | falhas 0
+Web imagens 150/291 | atualizadas 134 | puladas 16 | falhas 0
+Web imagens 175/291 | atualizadas 159 | puladas 16 | falhas 0
+Web imagens 200/291 | atualizadas 183 | puladas 16 | falhas 1
+Web imagens 225/291 | atualizadas 207 | puladas 17 | falhas 1
+Web imagens 275/291 | atualizadas 248 | puladas 26 | falhas 1
+Web imagens 275/291 | atualizadas 248 | puladas 26 | falhas 1
+Web imagens 291/291 | atualizadas 263 | puladas 27 | falhas 1
+Web imagens 291/291 | atualizadas 263 | puladas 27 | falhas 1
+{
+  "processed": 291,
+  "updated": 263,
+  "skipped": 27,
+  "failures": 1
+}

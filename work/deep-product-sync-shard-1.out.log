@@ -1,0 +1,32 @@
+
+> @belaways/backend@1.0.0 sync:products
+> tsx src/scripts/sync-products.ts
+
+Carregando lista de produtos do cache...
+Produtos encontrados: 1518
+Modo de sincronizacao: details
+Fonte da lista: cache
+Shard: 2/3
+Produtos pendentes de enriquecimento: 374
+Sincronizados 25/374 | imagens 11 | estoque 0 | falhas 0 | 88s
+Sincronizados 50/374 | imagens 19 | estoque 0 | falhas 0 | 175s
+Sincronizados 75/374 | imagens 40 | estoque 0 | falhas 0 | 323s
+Sincronizados 100/374 | imagens 58 | estoque 0 | falhas 0 | 472s
+Sincronizados 125/374 | imagens 80 | estoque 0 | falhas 0 | 559s
+Sincronizados 150/374 | imagens 95 | estoque 0 | falhas 0 | 647s
+Sincronizados 175/374 | imagens 111 | estoque 0 | falhas 0 | 799s
+Sincronizados 200/374 | imagens 124 | estoque 0 | falhas 0 | 886s
+Sincronizados 225/374 | imagens 147 | estoque 0 | falhas 0 | 973s
+Sincronizados 250/374 | imagens 167 | estoque 0 | falhas 0 | 1123s
+Sincronizados 275/374 | imagens 175 | estoque 0 | falhas 0 | 1215s
+Sincronizados 300/374 | imagens 190 | estoque 0 | falhas 0 | 1363s
+Sincronizados 325/374 | imagens 205 | estoque 0 | falhas 0 | 1450s
+Sincronizados 350/374 | imagens 215 | estoque 0 | falhas 0 | 1597s
+Sincronizados 374/374 | imagens 235 | estoque 0 | falhas 0 | 1683s
+{
+  "total": 1518,
+  "withImage": 235,
+  "withStock": 0,
+  "failures": 0,
+  "elapsedSeconds": 1683
+}

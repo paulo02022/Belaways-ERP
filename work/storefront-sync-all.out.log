@@ -1,0 +1,26 @@
+
+> @belaways/backend@1.0.0 sync:storefront
+> tsx src/scripts/sync-storefront-products.ts
+
+URLs da vitrine: 217
+Produtos no cache: 1518
+Vitrine 16/217 | casados 15 | atualizados 15 | pulados 1
+Vitrine 32/217 | casados 31 | atualizados 31 | pulados 1
+Vitrine 48/217 | casados 47 | atualizados 47 | pulados 1
+Vitrine 64/217 | casados 63 | atualizados 63 | pulados 1
+Vitrine 80/217 | casados 79 | atualizados 79 | pulados 1
+Vitrine 96/217 | casados 95 | atualizados 95 | pulados 1
+Vitrine 112/217 | casados 111 | atualizados 111 | pulados 1
+Vitrine 128/217 | casados 120 | atualizados 120 | pulados 8
+Vitrine 144/217 | casados 129 | atualizados 129 | pulados 15
+Vitrine 160/217 | casados 137 | atualizados 137 | pulados 23
+Vitrine 176/217 | casados 142 | atualizados 142 | pulados 34
+Vitrine 192/217 | casados 152 | atualizados 152 | pulados 40
+Vitrine 208/217 | casados 160 | atualizados 160 | pulados 48
+Vitrine 217/217 | casados 160 | atualizados 160 | pulados 57
+{
+  "urls": 217,
+  "matched": 160,
+  "updated": 160,
+  "skipped": 57
+}

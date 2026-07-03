@@ -1,0 +1,45 @@
+{
+  "name": "@belaways/backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "sync:products": "tsx src/scripts/sync-products.ts",
+    "sync:stock": "tsx src/scripts/sync-product-stock.ts",
+    "sync:details": "tsx src/scripts/sync-product-details-missing.ts",
+    "sync:storefront": "tsx src/scripts/sync-storefront-products.ts",
+    "sync:storefront:catalog": "tsx src/scripts/sync-storefront-catalog-products.ts",
+    "sync:shopify": "tsx src/scripts/sync-shopify-product-data.ts",
+    "sync:shopify:catalog": "tsx src/scripts/sync-shopify-catalog-data.ts",
+    "sync:web-images": "tsx src/scripts/sync-web-product-images.ts",
+    "lint": "eslint \"src/**/*.ts\"",
+    "typecheck": "tsc -p tsconfig.json --pretty false"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.3",
+    "axios": "^1.10.0",
+    "compression": "^1.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
+    "pino": "^9.7.0",
+    "pino-http": "^10.5.0",
+    "xss": "^1.0.15",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.7.5",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/hpp": "^0.2.6",
+    "@types/node": "^24.0.10",
+    "pino-pretty": "^13.0.0",
+    "tsx": "^4.20.3"
+  }
+}

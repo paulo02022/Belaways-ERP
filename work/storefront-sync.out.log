@@ -1,0 +1,34 @@
+
+> @belaways/backend@1.0.0 sync:storefront
+> tsx src/scripts/sync-storefront-products.ts
+
+URLs da vitrine: 217
+Produtos no cache: 1000
+Vitrine 10/217 | casados 9 | atualizados 9 | pulados 1
+Vitrine 20/217 | casados 19 | atualizados 19 | pulados 1
+Vitrine 30/217 | casados 29 | atualizados 29 | pulados 1
+Vitrine 40/217 | casados 39 | atualizados 39 | pulados 1
+Vitrine 50/217 | casados 49 | atualizados 49 | pulados 1
+Vitrine 60/217 | casados 58 | atualizados 58 | pulados 2
+Vitrine 70/217 | casados 66 | atualizados 66 | pulados 4
+Vitrine 80/217 | casados 72 | atualizados 72 | pulados 8
+Vitrine 90/217 | casados 82 | atualizados 82 | pulados 8
+Vitrine 100/217 | casados 92 | atualizados 92 | pulados 8
+Vitrine 110/217 | casados 101 | atualizados 101 | pulados 9
+Vitrine 120/217 | casados 108 | atualizados 108 | pulados 12
+Vitrine 130/217 | casados 113 | atualizados 113 | pulados 17
+Vitrine 140/217 | casados 119 | atualizados 119 | pulados 21
+Vitrine 150/217 | casados 124 | atualizados 124 | pulados 26
+Vitrine 160/217 | casados 129 | atualizados 129 | pulados 31
+Vitrine 170/217 | casados 130 | atualizados 130 | pulados 40
+Vitrine 180/217 | casados 134 | atualizados 134 | pulados 46
+Vitrine 190/217 | casados 140 | atualizados 140 | pulados 50
+Vitrine 200/217 | casados 144 | atualizados 144 | pulados 56
+Vitrine 210/217 | casados 147 | atualizados 147 | pulados 63
+Vitrine 217/217 | casados 147 | atualizados 147 | pulados 70
+{
+  "urls": 217,
+  "matched": 147,
+  "updated": 147,
+  "skipped": 70
+}

@@ -1,0 +1,27 @@
+
+> @belaways/backend@1.0.0 sync:web-images
+> tsx src/scripts/sync-web-product-images.ts
+
+Produtos sem imagem para busca web: 851
+Web imagens 25/851 | atualizadas 23 | puladas 2 | falhas 0
+Web imagens 75/851 | atualizadas 55 | puladas 2 | falhas 18
+Web imagens 150/851 | atualizadas 70 | puladas 4 | falhas 76
+Web imagens 200/851 | atualizadas 70 | puladas 4 | falhas 126
+Web imagens 200/851 | atualizadas 70 | puladas 4 | falhas 126
+Web imagens 250/851 | atualizadas 70 | puladas 4 | falhas 176
+Web imagens 250/851 | atualizadas 70 | puladas 4 | falhas 176
+Web imagens 250/851 | atualizadas 70 | puladas 4 | falhas 176
+Web imagens 325/851 | atualizadas 70 | puladas 4 | falhas 251
+Web imagens 325/851 | atualizadas 70 | puladas 4 | falhas 251
+Web imagens 325/851 | atualizadas 70 | puladas 4 | falhas 251
+Web imagens 375/851 | atualizadas 70 | puladas 4 | falhas 301
+Web imagens 375/851 | atualizadas 70 | puladas 4 | falhas 301
+Web imagens 400/851 | atualizadas 70 | puladas 4 | falhas 326
+Web imagens 475/851 | atualizadas 70 | puladas 4 | falhas 401
+Web imagens 525/851 | atualizadas 70 | puladas 4 | falhas 451
+Web imagens 525/851 | atualizadas 70 | puladas 4 | falhas 451
+Web imagens 550/851 | atualizadas 70 | puladas 4 | falhas 476
+Web imagens 575/851 | atualizadas 70 | puladas 4 | falhas 501
+Web imagens 575/851 | atualizadas 70 | puladas 4 | falhas 501
+Web imagens 650/851 | atualizadas 70 | puladas 4 | falhas 576
+Web imagens 650/851 | atualizadas 70 | puladas 4 | falhas 576

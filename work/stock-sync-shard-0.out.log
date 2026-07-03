@@ -1,0 +1,34 @@
+
+> @belaways/backend@1.0.0 sync:stock
+> tsx src/scripts/sync-product-stock.ts
+
+Produtos no cache: 1518
+Produtos pendentes de estoque: 488
+Shard: 1/3
+Estoques 25/488 | atualizados 25 | com saldo 25 | falhas 0 | 34s
+Estoques 50/488 | atualizados 50 | com saldo 50 | falhas 0 | 129s
+Estoques 75/488 | atualizados 75 | com saldo 75 | falhas 0 | 160s
+Estoques 100/488 | atualizados 100 | com saldo 100 | falhas 0 | 312s
+Estoques 125/488 | atualizados 125 | com saldo 125 | falhas 0 | 343s
+Estoques 150/488 | atualizados 150 | com saldo 150 | falhas 0 | 494s
+Estoques 175/488 | atualizados 175 | com saldo 175 | falhas 0 | 585s
+Estoques 200/488 | atualizados 200 | com saldo 200 | falhas 0 | 677s
+Estoques 225/488 | atualizados 225 | com saldo 225 | falhas 0 | 770s
+Estoques 250/488 | atualizados 250 | com saldo 250 | falhas 0 | 861s
+Estoques 275/488 | atualizados 275 | com saldo 275 | falhas 0 | 954s
+Estoques 300/488 | atualizados 300 | com saldo 300 | falhas 0 | 1044s
+Estoques 325/488 | atualizados 325 | com saldo 325 | falhas 0 | 1137s
+Estoques 350/488 | atualizados 350 | com saldo 350 | falhas 0 | 1232s
+Estoques 375/488 | atualizados 375 | com saldo 375 | falhas 0 | 1325s
+Estoques 400/488 | atualizados 400 | com saldo 400 | falhas 0 | 1416s
+Estoques 425/488 | atualizados 425 | com saldo 425 | falhas 0 | 1568s
+Estoques 450/488 | atualizados 450 | com saldo 450 | falhas 0 | 1598s
+Estoques 475/488 | atualizados 475 | com saldo 475 | falhas 0 | 1749s
+Estoques 488/488 | atualizados 488 | com saldo 488 | falhas 0 | 1764s
+{
+  "processed": 488,
+  "updated": 488,
+  "withStock": 488,
+  "failures": 0,
+  "elapsedSeconds": 1764
+}

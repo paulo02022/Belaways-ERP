@@ -1,0 +1,13 @@
+
+> @belaways/backend@1.0.0 sync:web-images
+> tsx src/scripts/sync-web-product-images.ts
+
+Produtos sem imagem para busca web: 755
+Web imagens 25/755 | atualizadas 19 | puladas 6 | falhas 0
+Web imagens 50/755 | atualizadas 43 | puladas 7 | falhas 0
+Web imagens 75/755 | atualizadas 68 | puladas 7 | falhas 0
+Web imagens 100/755 | atualizadas 91 | puladas 9 | falhas 0
+Web imagens 150/755 | atualizadas 130 | puladas 20 | falhas 0
+Web imagens 150/755 | atualizadas 130 | puladas 20 | falhas 0
+Web imagens 200/755 | atualizadas 179 | puladas 21 | falhas 0
+Web imagens 200/755 | atualizadas 179 | puladas 21 | falhas 0

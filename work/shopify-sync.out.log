@@ -1,0 +1,34 @@
+
+> @belaways/backend@1.0.0 sync:shopify
+> tsx src/scripts/sync-shopify-product-data.ts
+
+Produtos para enriquecer via Shopify: 1006
+Shopify 25/1006 | atualizados 4 | imagens 0 | pulados 21 | falhas 0
+Shopify 75/1006 | atualizados 20 | imagens 0 | pulados 55 | falhas 0
+Shopify 150/1006 | atualizados 63 | imagens 2 | pulados 87 | falhas 0
+Shopify 175/1006 | atualizados 78 | imagens 7 | pulados 97 | falhas 0
+Shopify 200/1006 | atualizados 85 | imagens 13 | pulados 115 | falhas 0
+Shopify 225/1006 | atualizados 88 | imagens 16 | pulados 137 | falhas 0
+Shopify 225/1006 | atualizados 88 | imagens 16 | pulados 137 | falhas 0
+Shopify 325/1006 | atualizados 95 | imagens 23 | pulados 219 | falhas 11
+Shopify 325/1006 | atualizados 95 | imagens 23 | pulados 219 | falhas 11
+Shopify 325/1006 | atualizados 95 | imagens 23 | pulados 219 | falhas 11
+Shopify 350/1006 | atualizados 95 | imagens 23 | pulados 244 | falhas 11
+Shopify 400/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 47
+Shopify 1006/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 653
+Shopify 1006/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 653
+Shopify 1006/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 653
+Shopify 1006/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 653
+Shopify 1006/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 653
+Shopify 1006/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 653
+Shopify 1006/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 653
+Shopify 1006/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 653
+Shopify 1006/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 653
+Shopify 1006/1006 | atualizados 102 | imagens 29 | pulados 251 | falhas 653
+{
+  "processed": 1006,
+  "updated": 102,
+  "withImage": 29,
+  "skipped": 251,
+  "failures": 653
+}
