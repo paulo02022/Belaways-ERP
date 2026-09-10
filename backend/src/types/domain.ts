@@ -42,6 +42,17 @@ export type Product = {
   slug: string | null;
   videoUrl: string | null;
   updatedAt: string;
+  sourceUpdatedAt?: string | null;
+  syncedAt?: string;
+};
+
+export type ProductCatalogSummary = {
+  total: number;
+  withImage: number;
+  withStock: number;
+  lowStock: number;
+  outOfStock: number;
+  lastSyncAt: string | null;
 };
 
 export type Order = {

@@ -11,6 +11,7 @@ export const ordersQuerySchema = z.object({
   search: z.string().max(120).optional(),
   page: z.coerce.number().int().positive().optional().default(1),
   pageSize: z.coerce.number().int().positive().max(100).optional().default(20),
+  days: z.coerce.number().int().min(30).max(365).optional().default(90),
   status: z.string().max(40).optional(),
   format: z.enum(['json', 'csv']).optional().default('json'),
 });
@@ -22,7 +23,7 @@ export const orderParamsSchema = z.object({
 export const ordersController = {
   index: asyncHandler(async (request, response) => {
     const query = ordersQuerySchema.parse(request.query);
-    const orders = await tinyService.listOrders({ search: query.search, page: query.page });
+    const orders = await tinyService.listOrders({ search: query.search, page: 1, days: query.days });
     const filtered = query.status ? orders.filter((order) => order.status === query.status) : orders;
 
     if (query.format === 'csv') {

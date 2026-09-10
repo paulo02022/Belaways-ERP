@@ -4,6 +4,13 @@ import { requireSupabaseAdmin } from '../database/supabase.js';
 import { AppError } from '../lib/errors.js';
 import type { UserRole } from '../types/auth.js';
 
+const userRoles = new Set<UserRole>(['owner', 'admin', 'manager', 'operator', 'viewer']);
+
+export const resolveUserRole = (value: unknown): UserRole => {
+  const role = typeof value === 'string' ? (value as UserRole) : 'operator';
+  return userRoles.has(role) ? role : 'operator';
+};
+
 export const authenticate = async (
   request: Request,
   _response: Response,
@@ -38,7 +45,7 @@ export const authenticate = async (
       id: data.user.id,
       email: profile?.email ?? data.user.email,
       fullName: profile?.full_name ?? data.user.user_metadata.full_name ?? data.user.email,
-      role: (profile?.role ?? data.user.user_metadata.role ?? 'operator') as UserRole,
+      role: resolveUserRole(profile?.role),
       status: profile?.status === 'inactive' ? 'inactive' : 'active',
     };
 

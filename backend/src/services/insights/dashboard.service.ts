@@ -28,7 +28,12 @@ const buildSalesTrend = (orders: Order[]) => {
 };
 
 export class DashboardService {
-  build(products: Product[], orders: Order[], apiStatus: DashboardOverview['apiStatus']): DashboardOverview {
+  build(
+    products: Product[],
+    orders: Order[],
+    apiStatus: DashboardOverview['apiStatus'],
+    lastSyncAt: string | null,
+  ): DashboardOverview {
     const alerts = alertsService.generate(products, orders);
     const categoryMap = new Map<string, number>();
     const statusMap = new Map<string, number>();
@@ -56,7 +61,7 @@ export class DashboardService {
         openAlerts: alerts.length,
         inconsistencies: alerts.filter((alert) => alert.source === 'product').length,
       },
-      lastSyncAt: new Date().toISOString(),
+      lastSyncAt: lastSyncAt ?? new Date(0).toISOString(),
       apiStatus,
       salesTrend: buildSalesTrend(orders),
       stockByCategory: Array.from(categoryMap.entries()).map(([category, estoque]) => ({

@@ -21,7 +21,7 @@ const buildUrl = (path: string, query?: RequestOptions['query']) => {
   return `${url.pathname}${url.search}`;
 };
 
-export const apiRequest = async <T>(path: string, options: RequestOptions = {}) => {
+const getAccessToken = async () => {
   if (!supabase) {
     throw new Error('Supabase nao esta configurado para autenticar requisicoes reais.');
   }
@@ -30,11 +30,17 @@ export const apiRequest = async <T>(path: string, options: RequestOptions = {}) 
     data: { session },
   } = await supabase.auth.getSession();
 
+  return session?.access_token;
+};
+
+export const apiRequest = async <T>(path: string, options: RequestOptions = {}) => {
+  const accessToken = await getAccessToken();
+
   const response = await fetch(buildUrl(path, options.query), {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...options.headers,
     },
   });
@@ -48,4 +54,53 @@ export const apiRequest = async <T>(path: string, options: RequestOptions = {}) 
   }
 
   return payload;
+};
+
+const fileNameFromDisposition = (header: string | null, fallback: string) => {
+  const encoded = header?.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+  const quoted = header?.match(/filename="([^"]+)"/i)?.[1];
+
+  try {
+    return encoded ? decodeURIComponent(encoded) : (quoted ?? fallback);
+  } catch {
+    return fallback;
+  }
+};
+
+const performApiFileDownload = async (path: string, fallbackFileName: string) => {
+  const accessToken = await getAccessToken();
+  const response = await fetch(buildUrl(path), {
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+  });
+
+  if (!response.ok) {
+    let message = 'Falha ao baixar o arquivo.';
+    try {
+      const payload = (await response.json()) as { error?: { message?: string } };
+      message = payload.error?.message ?? message;
+    } catch {
+      // The download endpoint may return a non-JSON gateway error.
+    }
+    throw new Error(message);
+  }
+
+  const blobUrl = URL.createObjectURL(await response.blob());
+  const anchor = document.createElement('a');
+  anchor.href = blobUrl;
+  anchor.download = fileNameFromDisposition(
+    response.headers.get('Content-Disposition'),
+    fallbackFileName,
+  );
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(blobUrl);
+};
+
+export const downloadApiFile = async (path: string, fallbackFileName: string) => {
+  try {
+    await performApiFileDownload(path, fallbackFileName);
+  } catch (error) {
+    window.alert(error instanceof Error ? error.message : 'Falha ao baixar o arquivo.');
+  }
 };

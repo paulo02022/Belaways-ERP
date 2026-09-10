@@ -13,11 +13,12 @@ export const dashboardQuerySchema = z.object({
 export const dashboardController = {
   overview: asyncHandler(async (_request, response) => {
     const hasProductCache = await productsCacheService.hasProducts();
-    const [products, orders] = await Promise.all([
-      hasProductCache ? productsCacheService.list() : tinyService.listAllProducts(),
+    const [products, orders, lastSyncAt] = await Promise.all([
+      hasProductCache ? productsCacheService.list({ status: 'active' }) : tinyService.listAllProducts(),
       tinyService.listOrders({ page: 1 }),
+      hasProductCache ? productsCacheService.getLastSyncAt() : Promise.resolve(null),
     ]);
 
-    sendSuccess(response, dashboardService.build(products, orders, 'online'));
+    sendSuccess(response, dashboardService.build(products, orders, 'online', lastSyncAt));
   }),
 };

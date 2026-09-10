@@ -15,6 +15,7 @@
     "sync:shopify": "tsx src/scripts/sync-shopify-product-data.ts",
     "sync:shopify:catalog": "tsx src/scripts/sync-shopify-catalog-data.ts",
     "sync:web-images": "tsx src/scripts/sync-web-product-images.ts",
+    "test": "tsx --test src/**/*.test.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc -p tsconfig.json --pretty false"
   },

@@ -6,7 +6,8 @@ import { DataTable, type DataColumn } from '@/components/ui/DataTable';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { PriorityBadge } from '@/components/ui/StatusBadge';
 import { useAlerts } from '@/hooks/use-data';
-import { downloadUrl, formatDate } from '@/lib/utils';
+import { downloadApiFile } from '@/api/client';
+import { formatDate } from '@/lib/utils';
 import type { Alert } from '@/types/domain';
 
 export const Alerts = () => {
@@ -39,7 +40,7 @@ export const Alerts = () => {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Alertas" description="Prioridades operacionais geradas a partir de produtos, pedidos e integrações." actions={<Button variant="secondary" onClick={() => downloadUrl('/api/alerts?format=csv')}><Download className="h-4 w-4" aria-hidden="true" />CSV</Button>} />
+      <PageHeader title="Alertas" description="Prioridades operacionais geradas a partir de produtos, pedidos e integrações." actions={<Button variant="secondary" onClick={() => void downloadApiFile('/api/alerts?format=csv', 'alertas-belaways.csv')}><Download className="h-4 w-4" aria-hidden="true" />CSV</Button>} />
       <DataTable rows={isLoading ? [] : data} columns={columns} />
     </div>
   );

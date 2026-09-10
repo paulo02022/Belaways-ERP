@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { DataTable, type DataColumn } from '@/components/ui/DataTable';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useAudits } from '@/hooks/use-data';
-import { downloadUrl, formatDate } from '@/lib/utils';
+import { downloadApiFile } from '@/api/client';
+import { formatDate } from '@/lib/utils';
 import type { AuditLog } from '@/types/domain';
 
 export const Audit = () => {
@@ -28,7 +29,7 @@ export const Audit = () => {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Auditoria" description="Histórico de ações, usuários, IPs, resultados e entidades relacionadas." actions={<Button variant="secondary" onClick={() => downloadUrl('/api/audits?format=csv')}><Download className="h-4 w-4" aria-hidden="true" />CSV</Button>} />
+      <PageHeader title="Auditoria" description="Histórico de ações, usuários, IPs, resultados e entidades relacionadas." actions={<Button variant="secondary" onClick={() => void downloadApiFile('/api/audits?format=csv', 'auditoria-belaways.csv')}><Download className="h-4 w-4" aria-hidden="true" />CSV</Button>} />
       <DataTable rows={isLoading ? [] : data} columns={columns} />
     </div>
   );

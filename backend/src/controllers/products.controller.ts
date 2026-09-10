@@ -11,9 +11,12 @@ import { paginate } from '../utils/pagination.js';
 export const productsQuerySchema = z.object({
   search: z.string().max(120).optional(),
   page: z.coerce.number().int().positive().optional().default(1),
-  pageSize: z.coerce.number().int().positive().max(5000).optional().default(5000),
+  pageSize: z.coerce.number().int().positive().max(100).optional().default(40),
   category: z.string().max(80).optional(),
   stock: z.enum(['all', 'low', 'out']).optional().default('all'),
+  status: z.enum(['active', 'inactive', 'all']).optional().default('active'),
+  sort: z.enum(['name', 'updated', 'stock', 'price']).optional().default('updated'),
+  order: z.enum(['asc', 'desc']).optional().default('desc'),
   format: z.enum(['json', 'csv']).optional().default('json'),
 });
 
@@ -31,34 +34,43 @@ export const productsController = {
   index: asyncHandler(async (request, response) => {
     const query = productsQuerySchema.parse(request.query);
     const hasCache = await productsCacheService.hasProducts();
-    const products = hasCache
-      ? await productsCacheService.list({
-          search: query.search,
-          category: query.category,
-          stock: query.stock,
-        })
-      : await tinyService.listAllProducts({ search: query.search });
-    const filtered = products.filter((product) => {
-      if (query.category && product.category !== query.category) return false;
-      if (query.stock === 'low') {
-        return product.stock !== null && product.stock > 0 && product.stock <= product.minimumStock;
-      }
-      if (query.stock === 'out') return product.stock !== null && product.stock <= 0;
-      return true;
-    });
 
     if (query.format === 'csv') {
-      sendCsv(response, 'produtos-belaways.csv', toCsv(filtered as unknown as Array<Record<string, unknown>>));
+      const products = hasCache
+        ? await productsCacheService.list({
+            search: query.search,
+            category: query.category,
+            stock: query.stock,
+            status: query.status,
+          })
+        : await tinyService.listAllProducts({ search: query.search });
+      sendCsv(response, 'produtos-belaways.csv', toCsv(products as unknown as Array<Record<string, unknown>>));
       return;
     }
 
-    const paginated = paginate(filtered, query.page, query.pageSize);
+    const paginated = hasCache
+      ? await productsCacheService.listPage({
+          search: query.search,
+          category: query.category,
+          stock: query.stock,
+          status: query.status,
+          sort: query.sort,
+          order: query.order,
+          page: query.page,
+          pageSize: query.pageSize,
+        })
+      : paginate(await tinyService.listAllProducts({ search: query.search }), query.page, query.pageSize);
     sendSuccess(response, paginated.items, 'ok', {
       page: paginated.page,
       pageSize: paginated.pageSize,
       total: paginated.total,
       totalPages: paginated.totalPages,
     });
+  }),
+
+  summary: asyncHandler(async (request, response) => {
+    const status = z.enum(['active', 'inactive', 'all']).optional().default('active').parse(request.query.status);
+    sendSuccess(response, await productsCacheService.getSummary(status));
   }),
 
   show: asyncHandler(async (request, response) => {

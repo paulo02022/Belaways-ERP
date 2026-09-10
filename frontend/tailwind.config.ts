@@ -28,7 +28,7 @@ export default {
         glow: '0 18px 40px rgba(142, 68, 173, 0.18)',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Segoe UI Variable"', 'Aptos', '"Segoe UI"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
     },
   },

@@ -1,6 +1,7 @@
 import { hasSupabaseConfig, supabaseAdmin } from '../../database/supabase.js';
 import { logger } from '../../lib/logger.js';
-import type { Product } from '../../types/domain.js';
+import type { Product, ProductCatalogSummary } from '../../types/domain.js';
+import type { PaginatedResult } from '../../utils/pagination.js';
 
 type ProductSyncResult = {
   persisted: boolean;
@@ -20,6 +21,14 @@ type ProductCacheFilters = {
   search?: string;
   category?: string;
   stock?: 'all' | 'low' | 'out';
+  status?: 'active' | 'inactive' | 'all';
+};
+
+type ProductPageFilters = ProductCacheFilters & {
+  page: number;
+  pageSize: number;
+  sort: 'name' | 'updated' | 'stock' | 'price';
+  order: 'asc' | 'desc';
 };
 
 type ProductCacheRow = {
@@ -44,8 +53,8 @@ type ProductCacheRow = {
   height_cm: number | string | null;
   length_cm: number | string | null;
   image_url: string | null;
-  raw_payload: Record<string, unknown> | null;
-  stock_payload: Record<string, unknown> | null;
+  raw_payload?: Record<string, unknown> | null;
+  stock_payload?: Record<string, unknown> | null;
   synced_at: string | null;
   updated_at: string | null;
 };
@@ -58,7 +67,14 @@ const chunk = <T>(items: T[], size: number) => {
   return chunks;
 };
 
+const wait = (milliseconds: number) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+
 const supabasePageSize = 1000;
+const productListColumns =
+  'tiny_id,sku,name,category,ean,status,unit,brand,price,promotional_price,cost_price,stock_quantity,reserved_stock,minimum_stock,maximum_stock,weight_net_kg,weight_gross_kg,width_cm,height_cm,length_cm,image_url,synced_at,updated_at';
 
 const isMissingProductTable = (error: { code?: string; message?: string }) =>
   error.code === '42P01' ||
@@ -79,6 +95,25 @@ const asOptionalNumber = (value: unknown) => {
 const asOptionalString = (value: unknown) => {
   if (value === null || value === undefined || value === '') return null;
   return String(value);
+};
+
+const asIsoDate = (value: unknown) => {
+  if (!value) return null;
+  const text = String(value);
+  const brDate = text.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}):(\d{2}))?$/);
+  if (brDate) {
+    const [, day, month, year, hour = '0', minute = '0', second = '0'] = brDate;
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      Number(hour),
+      Number(minute),
+      Number(second),
+    ).toISOString();
+  }
+  const parsed = new Date(text);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
 };
 
 const firstImageUrl = (value: unknown): string | null => {
@@ -163,6 +198,8 @@ const mapRowToProduct = (row: ProductCacheRow): Product => {
     slug: asOptionalString(raw.slug),
     videoUrl: asOptionalString(raw.link_video),
     updatedAt: row.synced_at ?? row.updated_at ?? new Date().toISOString(),
+    sourceUpdatedAt: asIsoDate(raw.data_alteracao ?? raw.data_criacao),
+    syncedAt: row.synced_at ?? row.updated_at ?? new Date().toISOString(),
   };
 };
 
@@ -265,6 +302,37 @@ const mergeRowWithExisting = (
   };
 };
 
+const mergeStockRowWithExisting = (
+  row: ProductCacheUpsertRow,
+  existing: ProductCacheRow | undefined,
+): ProductCacheUpsertRow => {
+  if (!existing) return row;
+
+  return {
+    ...row,
+    sku: existing.sku,
+    name: existing.name,
+    category: existing.category,
+    ean: existing.ean,
+    status: existing.status,
+    unit: existing.unit,
+    brand: existing.brand,
+    price: asNumber(existing.price),
+    promotional_price: existingNumber(existing.promotional_price),
+    cost_price: existingNumber(existing.cost_price),
+    minimum_stock: existingNumber(existing.minimum_stock) ?? 0,
+    maximum_stock: existingNumber(existing.maximum_stock),
+    weight_net_kg: existingNumber(existing.weight_net_kg),
+    weight_gross_kg: existingNumber(existing.weight_gross_kg),
+    width_cm: existingNumber(existing.width_cm),
+    height_cm: existingNumber(existing.height_cm),
+    length_cm: existingNumber(existing.length_cm),
+    image_url: existing.image_url,
+    raw_payload: existing.raw_payload ?? {},
+    stock_payload: mergePayload(existing.stock_payload, row.stock_payload),
+  };
+};
+
 export class ProductsCacheService {
   async hasProducts() {
     if (!hasSupabaseConfig || !supabaseAdmin) return false;
@@ -287,10 +355,10 @@ export class ProductsCacheService {
 
     const client = supabaseAdmin;
     const buildQuery = () => {
-      let query = client.from('product_cache').select('*').order('name', { ascending: true });
+      let query = client.from('product_cache').select(productListColumns).order('name', { ascending: true });
 
       if (filters.search) {
-        const search = filters.search.replace(/[%*,]/g, ' ').trim();
+        const search = filters.search.replace(/[^\p{L}\p{N}\s._/-]/gu, ' ').trim();
         if (search) {
           query = query.or(`name.ilike.%${search}%,sku.ilike.%${search}%,ean.ilike.%${search}%`);
         }
@@ -298,6 +366,8 @@ export class ProductsCacheService {
 
       if (filters.category) query = query.eq('category', filters.category);
       if (filters.stock === 'out') query = query.lte('stock_quantity', 0);
+      if (filters.status === 'active') query = query.eq('status', 'A');
+      if (filters.status === 'inactive') query = query.eq('status', 'I');
 
       return query;
     };
@@ -325,6 +395,145 @@ export class ProductsCacheService {
     }
 
     return products;
+  }
+
+  async listPage(filters: ProductPageFilters): Promise<PaginatedResult<Product>> {
+    if (!hasSupabaseConfig || !supabaseAdmin) {
+      return {
+        items: [],
+        page: filters.page,
+        pageSize: filters.pageSize,
+        total: 0,
+        totalPages: 1,
+      };
+    }
+
+    if (filters.stock === 'low') {
+      const products = await this.list(filters);
+      const lowStock = products.filter(
+        (product) => product.stock !== null && product.stock > 0 && product.stock <= product.minimumStock,
+      );
+      const start = (filters.page - 1) * filters.pageSize;
+      return {
+        items: lowStock.slice(start, start + filters.pageSize),
+        page: filters.page,
+        pageSize: filters.pageSize,
+        total: lowStock.length,
+        totalPages: Math.max(Math.ceil(lowStock.length / filters.pageSize), 1),
+      };
+    }
+
+    const sortColumn = {
+      name: 'name',
+      updated: 'synced_at',
+      stock: 'stock_quantity',
+      price: 'price',
+    }[filters.sort];
+    const from = (filters.page - 1) * filters.pageSize;
+    const to = from + filters.pageSize - 1;
+    let query = supabaseAdmin
+      .from('product_cache')
+      .select(productListColumns, { count: 'exact' })
+      .order(sortColumn, { ascending: filters.order === 'asc', nullsFirst: false })
+      .range(from, to);
+
+    if (filters.search) {
+      const search = filters.search.replace(/[^\p{L}\p{N}\s._/-]/gu, ' ').trim();
+      if (search) query = query.or(`name.ilike.%${search}%,sku.ilike.%${search}%,ean.ilike.%${search}%`);
+    }
+    if (filters.category) query = query.eq('category', filters.category);
+    if (filters.stock === 'out') query = query.lte('stock_quantity', 0);
+    if (filters.status === 'active') query = query.eq('status', 'A');
+    if (filters.status === 'inactive') query = query.eq('status', 'I');
+
+    const { data, count, error } = await query;
+    if (error) throw error;
+
+    const total = count ?? 0;
+    return {
+      items: ((data ?? []) as unknown as ProductCacheRow[]).map(mapRowToProduct),
+      page: filters.page,
+      pageSize: filters.pageSize,
+      total,
+      totalPages: Math.max(Math.ceil(total / filters.pageSize), 1),
+    };
+  }
+
+  async getSummary(status: ProductCacheFilters['status'] = 'active'): Promise<ProductCatalogSummary> {
+    if (!hasSupabaseConfig || !supabaseAdmin) {
+      return { total: 0, withImage: 0, withStock: 0, lowStock: 0, outOfStock: 0, lastSyncAt: null };
+    }
+
+    const rows: Array<{
+      image_url: string | null;
+      stock_quantity: number | string | null;
+      minimum_stock: number | string | null;
+      synced_at: string | null;
+    }> = [];
+
+    for (let from = 0; ; from += supabasePageSize) {
+      let query = supabaseAdmin
+        .from('product_cache')
+        .select('image_url,stock_quantity,minimum_stock,synced_at')
+        .order('synced_at', { ascending: false })
+        .range(from, from + supabasePageSize - 1);
+      if (status === 'active') query = query.eq('status', 'A');
+      if (status === 'inactive') query = query.eq('status', 'I');
+      const { data, error } = await query;
+      if (error) throw error;
+      rows.push(...((data ?? []) as typeof rows));
+      if ((data?.length ?? 0) < supabasePageSize) break;
+    }
+
+    return rows.reduce<ProductCatalogSummary>(
+      (summary, row) => {
+        const stock = asOptionalNumber(row.stock_quantity);
+        const minimum = asNumber(row.minimum_stock);
+        summary.total += 1;
+        if (row.image_url) summary.withImage += 1;
+        if (stock !== null) summary.withStock += 1;
+        if (stock !== null && stock <= 0) summary.outOfStock += 1;
+        if (stock !== null && stock > 0 && stock <= minimum) summary.lowStock += 1;
+        return summary;
+      },
+      {
+        total: 0,
+        withImage: 0,
+        withStock: 0,
+        lowStock: 0,
+        outOfStock: 0,
+        lastSyncAt: rows[0]?.synced_at ?? null,
+      },
+    );
+  }
+
+  async getLastSyncAt() {
+    if (!hasSupabaseConfig || !supabaseAdmin) return null;
+    const { data, error } = await supabaseAdmin
+      .from('product_cache')
+      .select('synced_at')
+      .order('synced_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    return data?.synced_at ?? null;
+  }
+
+  async getLastSuccessfulRunAt() {
+    if (!hasSupabaseConfig || !supabaseAdmin) return null;
+    const { data, error } = await supabaseAdmin
+      .from('product_sync_runs')
+      .select('finished_at')
+      .eq('status', 'finished')
+      .not('finished_at', 'is', null)
+      .order('finished_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) {
+      if (isMissingProductTable(error)) return null;
+      throw error;
+    }
+    return data?.finished_at ?? null;
   }
 
   async get(id: string): Promise<Product | null> {
@@ -383,6 +592,55 @@ export class ProductsCacheService {
     return true;
   }
 
+  async upsertStockUpdates(products: Product[]) {
+    if (!hasSupabaseConfig || !supabaseAdmin || products.length === 0) {
+      return products.length === 0;
+    }
+
+    for (const group of chunk(products, 250)) {
+      const rows = group.map(mapInputToRow);
+      const { data: existingRows, error: existingError } = await supabaseAdmin
+        .from('product_cache')
+        .select('*')
+        .in(
+          'tiny_id',
+          rows.map((row) => row.tiny_id),
+        );
+
+      if (existingError) {
+        if (isMissingProductTable(existingError)) return false;
+        throw existingError;
+      }
+
+      const existingById = new Map(
+        ((existingRows ?? []) as ProductCacheRow[]).map((row) => [row.tiny_id, row]),
+      );
+      const mergedRows = rows.map((row) =>
+        mergeStockRowWithExisting(row, existingById.get(row.tiny_id)),
+      );
+
+      let persisted = false;
+      for (let attempt = 1; attempt <= 3; attempt += 1) {
+        const { error } = await supabaseAdmin.from('product_cache').upsert(mergedRows, {
+          onConflict: 'tiny_id',
+        });
+
+        if (!error) {
+          persisted = true;
+          break;
+        }
+        if (isMissingProductTable(error)) return false;
+        if (attempt === 3) throw error;
+        logger.warn({ attempt, error }, 'Retrying product stock persistence');
+        await wait(250 * attempt);
+      }
+
+      if (!persisted) return false;
+    }
+
+    return true;
+  }
+
   async insertMissingSummaries(products: Product[]) {
     if (!hasSupabaseConfig || !supabaseAdmin || products.length === 0) {
       return false;
@@ -433,7 +691,19 @@ export class ProductsCacheService {
       }
 
       runId = run.id;
-      await this.upsertMany(products);
+      if (products.length > 0) {
+        for (let attempt = 1; attempt <= 3; attempt += 1) {
+          try {
+            const persisted = await this.upsertMany(products);
+            if (!persisted) throw new Error('Product cache upsert was not persisted.');
+            break;
+          } catch (error) {
+            if (attempt === 3) throw error;
+            logger.warn({ attempt, error }, 'Retrying product cache persistence');
+            await wait(250 * attempt);
+          }
+        }
+      }
 
       const { error: finishError } = await supabaseAdmin
         .from('product_sync_runs')

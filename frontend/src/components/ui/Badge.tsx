@@ -20,7 +20,7 @@ export const Badge = ({
 }: HTMLAttributes<HTMLSpanElement> & { tone?: BadgeTone }) => (
   <span
     className={cn(
-      'inline-flex max-w-full items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium',
+      'inline-flex max-w-full items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold',
       tones[tone],
       className,
     )}

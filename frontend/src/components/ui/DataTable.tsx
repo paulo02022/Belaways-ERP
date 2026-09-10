@@ -18,15 +18,15 @@ export const DataTable = <T extends { id: string }>({
   empty?: string;
 }) => (
   <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-    <div className="overflow-x-auto">
+    <div className="max-h-[65vh] overflow-auto">
       <table className="min-w-full divide-y divide-zinc-100 text-sm dark:divide-zinc-800">
-        <thead className="bg-zinc-50 text-left dark:bg-zinc-950">
+        <thead className="sticky top-0 z-10 bg-zinc-50 text-left dark:bg-zinc-950">
           <tr>
             {columns.map((column) => (
               <th
                 key={column.header}
                 className={cn(
-                  'whitespace-nowrap px-4 py-3 font-medium text-zinc-500 dark:text-zinc-400',
+                  'whitespace-nowrap px-4 py-2.5 text-xs font-semibold uppercase text-zinc-500 dark:text-zinc-400',
                   column.className,
                 )}
               >
@@ -37,7 +37,7 @@ export const DataTable = <T extends { id: string }>({
         </thead>
         <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
           {rows.map((row) => (
-            <tr key={row.id} className="transition hover:bg-zinc-50 dark:hover:bg-zinc-800/60">
+            <tr key={row.id} className="transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/60">
               {columns.map((column) => (
                 <td
                   key={`${row.id}-${column.header}`}

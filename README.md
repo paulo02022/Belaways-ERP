@@ -110,6 +110,16 @@ backend/
 5. Tiny é consultado apenas pela camada `backend/src/services/tiny`.
 6. Supabase armazena perfis, preferências, configurações e auditoria.
 
+## Catálogo rápido e atualização contínua
+
+- A tela de produtos usa paginação no servidor (40 itens por página), busca com debounce e filtros persistidos na URL.
+- O navegador recebe somente as colunas necessárias para a página atual; payloads brutos do Tiny ficam no backend.
+- Usuários `owner`, `admin` e `manager` consultam atualizações incrementais a cada minuto enquanto o sistema está aberto.
+- Alterações salvas no `product_cache` são refletidas pelo Supabase Realtime e há uma releitura leve a cada 30 segundos como contingência.
+- O botão **Recarregar catálogo completo** refaz o índice de resumos quando for necessário recuperar uma base muito antiga.
+
+Para habilitar as filas de produto e estoque alterados, instale no Olist Tiny a extensão **API para estoque em tempo real**. Execute também a migration `backend/src/database/migrations/002_catalog_performance_realtime.sql` no Supabase para ativar índices de busca e publicar `product_cache` no Realtime.
+
 ## Produção
 
 ```bash

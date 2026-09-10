@@ -1,16 +1,36 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 
 import { endpoints } from '@/api/endpoints';
+import { queryClient } from '@/lib/query-client';
+
+export type ProductFilters = {
+  search?: string;
+  page: number;
+  pageSize: number;
+  stock: 'all' | 'low' | 'out';
+  status: 'active' | 'inactive' | 'all';
+  sort: 'name' | 'updated' | 'stock' | 'price';
+  order: 'asc' | 'desc';
+};
 
 export const useDashboard = () =>
   useQuery({ queryKey: ['dashboard'], queryFn: async () => (await endpoints.dashboard()).data });
 
-export const useProducts = (search?: string) =>
+export const useProducts = (filters: ProductFilters) =>
   useQuery({
-    queryKey: ['products', 'full-list-v2', search],
-    queryFn: async () => (await endpoints.products({ search, pageSize: 5000 })).data,
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: true,
+    queryKey: ['products', filters],
+    queryFn: async () => endpoints.products(filters),
+    placeholderData: keepPreviousData,
+    staleTime: 15_000,
+    refetchInterval: 30_000,
+  });
+
+export const useProductsSummary = (status: ProductFilters['status']) =>
+  useQuery({
+    queryKey: ['products-summary', status],
+    queryFn: async () => (await endpoints.productsSummary(status)).data,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
   });
 
 export const useProduct = (id: string | undefined) =>
@@ -20,10 +40,13 @@ export const useProduct = (id: string | undefined) =>
     queryFn: async () => (await endpoints.product(id ?? '')).data,
   });
 
-export const useOrders = (search?: string) =>
+export const useOrders = (filters: { search?: string; days?: number }) =>
   useQuery({
-    queryKey: ['orders', search],
-    queryFn: async () => (await endpoints.orders({ search })).data,
+    queryKey: ['orders', filters],
+    queryFn: async () => (await endpoints.orders({ ...filters, pageSize: 100 })).data,
+    placeholderData: keepPreviousData,
+    staleTime: 15_000,
+    refetchInterval: 30_000,
   });
 
 export const useOrder = (id: string | undefined) =>
@@ -49,4 +72,14 @@ export const usePreferences = () =>
   useQuery({ queryKey: ['preferences'], queryFn: async () => (await endpoints.preferences()).data });
 
 export const useSyncProducts = () =>
-  useMutation({ mutationFn: async () => (await endpoints.syncProducts()).data });
+  useMutation({
+    mutationFn: async (mode: 'incremental' | 'full' = 'incremental') =>
+      (await endpoints.syncProducts(mode)).data,
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['products'] }),
+        queryClient.invalidateQueries({ queryKey: ['products-summary'] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
+      ]);
+    },
+  });

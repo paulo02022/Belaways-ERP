@@ -22,6 +22,7 @@ protectedRouter.use(authenticate);
 
 protectedRouter.get('/dashboard', dashboardController.overview);
 protectedRouter.get('/products', productsController.index);
+protectedRouter.get('/products-summary', productsController.summary);
 protectedRouter.get('/products/:id', productsController.show);
 protectedRouter.patch('/products/:id/internal', authorize('admin', 'manager'), productsController.updateInternal);
 protectedRouter.get('/orders', ordersController.index);

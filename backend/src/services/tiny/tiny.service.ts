@@ -58,6 +58,13 @@ type TinyProductListResponse = {
   numero_paginas?: string | number;
 };
 
+type ProductListFilters = {
+  search?: string;
+  page?: number;
+  status?: 'A' | 'I' | 'E';
+  createdSince?: string;
+};
+
 type TinyOrderRecord = {
   pedido?: {
     id?: string | number;
@@ -107,6 +114,36 @@ const parseTinyDate = (value: unknown) => {
   const parsed = new Date(text);
   return Number.isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
 };
+
+const formatTinyDate = (date: Date) =>
+  new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'America/Sao_Paulo',
+  })
+    .format(date)
+    .replace(',', '');
+
+const formatTinyDay = (date: Date) =>
+  new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'America/Sao_Paulo',
+  }).format(date);
+
+const isEmptyTinyQueue = (error: unknown) =>
+  error instanceof Error &&
+  error.message
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+    .includes('consulta nao retornou registros');
 
 const firstImageUrl = (value: unknown): string | null => {
   if (!value) return null;
@@ -194,6 +231,8 @@ const mapProduct = (record: TinyProductRecord, stock?: TinyProductStock | null):
     slug: product.slug ? String(product.slug) : null,
     videoUrl: product.link_video ? String(product.link_video) : null,
     updatedAt: parseTinyDate(product.data_alteracao ?? product.data_criacao),
+    sourceUpdatedAt: parseTinyDate(product.data_alteracao ?? product.data_criacao),
+    syncedAt: new Date().toISOString(),
   };
 };
 
@@ -214,10 +253,12 @@ const mapOrder = (record: TinyOrderRecord): Order => {
 };
 
 export class TinyService {
-  private async searchProductsPage(filters: { search?: string; page?: number } = {}) {
+  private async searchProductsPage(filters: ProductListFilters = {}) {
     return tinyClient.post<TinyProductListResponse>('produtos.pesquisa.php', {
       pesquisa: filters.search,
       pagina: filters.page,
+      situacao: filters.status,
+      dataCriacao: filters.createdSince,
     });
   }
 
@@ -241,6 +282,52 @@ export class TinyService {
     }
 
     return products.map((product) => mapProduct(product));
+  }
+
+  async listRecentlyCreatedProducts(since: Date) {
+    let firstPage: TinyProductListResponse;
+    try {
+      firstPage = await this.searchProductsPage({ createdSince: formatTinyDate(since), page: 1 });
+    } catch (error) {
+      if (isEmptyTinyQueue(error)) return [];
+      throw error;
+    }
+    const totalPages = Math.min(
+      Math.max(Math.trunc(asNumber(firstPage.numero_paginas, 1)), 1),
+      maxTinyPages,
+    );
+    const products = [...(firstPage.produtos ?? [])];
+
+    for (let page = 2; page <= totalPages; page += 1) {
+      const result = await this.searchProductsPage({ createdSince: formatTinyDate(since), page });
+      products.push(...(result.produtos ?? []));
+    }
+
+    return products.map((product) => mapProduct(product));
+  }
+
+  private async listQueue(endpoint: string, since: Date) {
+    try {
+      const result = await tinyClient.post<TinyProductListResponse>(endpoint, {
+        dataAlteracao: formatTinyDate(since),
+        pagina: 1,
+      });
+
+      // Tiny removes queue entries as they are read. Draining one page per run avoids
+      // skipping records that move from page 2 to page 1 after the first response.
+      return (result.produtos ?? []).map((product) => mapProduct(product));
+    } catch (error) {
+      if (isEmptyTinyQueue(error)) return [];
+      throw error;
+    }
+  }
+
+  async listChangedProducts(since: Date) {
+    return this.listQueue('lista.atualizacoes.produtos', since);
+  }
+
+  async listStockUpdates(since: Date) {
+    return this.listQueue('lista.atualizacoes.estoque', since);
   }
 
   async getProductStock(id: string) {
@@ -284,13 +371,23 @@ export class TinyService {
     };
   }
 
-  async listOrders(filters: { search?: string; page?: number } = {}) {
+  async listOrders(filters: { search?: string; page?: number; days?: number } = {}) {
+    const search = filters.search?.trim();
+    const startsAt = new Date();
+    startsAt.setDate(startsAt.getDate() - Math.max(filters.days ?? 90, 1));
+    const numericSearch = Boolean(search && /^\d+$/.test(search));
     const result = await tinyClient.post<{ pedidos?: TinyOrderRecord[] }>('pedidos.pesquisa.php', {
-      pesquisa: filters.search,
+      numero: numericSearch ? search : undefined,
+      cliente: search && !numericSearch ? search : undefined,
+      dataInicial: formatTinyDay(startsAt),
+      dataFinal: formatTinyDay(new Date()),
       pagina: filters.page,
+      sort: 'DESC',
     });
 
-    return (result.pedidos ?? []).map(mapOrder);
+    return (result.pedidos ?? [])
+      .map(mapOrder)
+      .sort((first, second) => new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime());
   }
 
   async getOrder(id: string) {
