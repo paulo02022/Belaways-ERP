@@ -122,6 +122,9 @@ Para habilitar as filas de produto e estoque alterados, instale no Olist Tiny a 
 
 ## Produção
 
+- Catálogo, painel e pedidos atualizam automaticamente a cada 10 minutos enquanto o ERP está aberto; ao abrir ou retornar à aba, os dados vencidos são atualizados imediatamente.
+- O catálogo continua recebendo invalidações imediatas pelo Supabase Realtime quando `product_cache` muda.
+
 ```bash
 npm run build
 npm run start --workspace backend

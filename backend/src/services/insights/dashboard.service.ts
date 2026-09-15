@@ -33,6 +33,7 @@ export class DashboardService {
     orders: Order[],
     apiStatus: DashboardOverview['apiStatus'],
     lastSyncAt: string | null,
+    latestOrder: Order | null = orders[0] ?? null,
   ): DashboardOverview {
     const alerts = alertsService.generate(products, orders);
     const categoryMap = new Map<string, number>();
@@ -72,6 +73,7 @@ export class DashboardService {
         status,
         quantidade,
       })),
+      latestOrder,
     };
   }
 }

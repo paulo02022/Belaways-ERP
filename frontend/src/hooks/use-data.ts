@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 
 import { endpoints } from '@/api/endpoints';
+import { automaticRefreshIntervalMs } from '@/constants/refresh';
 import { queryClient } from '@/lib/query-client';
 
 export type ProductFilters = {
@@ -14,7 +15,12 @@ export type ProductFilters = {
 };
 
 export const useDashboard = () =>
-  useQuery({ queryKey: ['dashboard'], queryFn: async () => (await endpoints.dashboard()).data });
+  useQuery({
+    queryKey: ['dashboard'],
+    queryFn: async () => (await endpoints.dashboard()).data,
+    refetchInterval: automaticRefreshIntervalMs,
+    refetchOnWindowFocus: true,
+  });
 
 export const useProducts = (filters: ProductFilters) =>
   useQuery({
@@ -22,7 +28,8 @@ export const useProducts = (filters: ProductFilters) =>
     queryFn: async () => endpoints.products(filters),
     placeholderData: keepPreviousData,
     staleTime: 15_000,
-    refetchInterval: 30_000,
+    refetchInterval: automaticRefreshIntervalMs,
+    refetchOnWindowFocus: true,
   });
 
 export const useProductsSummary = (status: ProductFilters['status']) =>
@@ -30,7 +37,8 @@ export const useProductsSummary = (status: ProductFilters['status']) =>
     queryKey: ['products-summary', status],
     queryFn: async () => (await endpoints.productsSummary(status)).data,
     staleTime: 30_000,
-    refetchInterval: 60_000,
+    refetchInterval: automaticRefreshIntervalMs,
+    refetchOnWindowFocus: true,
   });
 
 export const useProduct = (id: string | undefined) =>
@@ -46,7 +54,8 @@ export const useOrders = (filters: { search?: string; days?: number }) =>
     queryFn: async () => (await endpoints.orders({ ...filters, pageSize: 100 })).data,
     placeholderData: keepPreviousData,
     staleTime: 15_000,
-    refetchInterval: 30_000,
+    refetchInterval: automaticRefreshIntervalMs,
+    refetchOnWindowFocus: true,
   });
 
 export const useOrder = (id: string | undefined) =>

@@ -9,6 +9,7 @@ import {
   Wifi,
 } from 'lucide-react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Link } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -92,6 +93,36 @@ export const Dashboard = () => {
           </div>
         ))}
       </section>
+
+      {data.latestOrder ? (
+        <Link
+          to={`/orders/${data.latestOrder.id}`}
+          className="grid gap-3 rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-brand-300 hover:bg-brand-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-brand-700 dark:hover:bg-zinc-800 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center"
+        >
+          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+            <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400">Última compra recebida</span>
+            <span className="mt-1 block truncate text-sm font-semibold text-zinc-950 dark:text-white">
+              Pedido #{data.latestOrder.number} · {data.latestOrder.customerName}
+            </span>
+            <span className="mt-1 block truncate text-xs text-zinc-500 dark:text-zinc-400">
+              {data.latestOrder.items.length > 0
+                ? data.latestOrder.items.map((item) => `${item.quantity}× ${item.name}`).join(' · ')
+                : 'Detalhes dos produtos indisponíveis'}
+            </span>
+          </span>
+          <span className="text-left sm:text-right">
+            <span className="block text-sm font-semibold tabular-nums text-zinc-950 dark:text-white">
+              {formatCurrency(data.latestOrder.total)}
+            </span>
+            <span className="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">
+              {formatRelativeTime(data.latestOrder.createdAt)}
+            </span>
+          </span>
+        </Link>
+      ) : null}
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(18rem,0.65fr)]">
         <Card>

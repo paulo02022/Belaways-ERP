@@ -82,7 +82,7 @@ export const Orders = () => {
     <div className="space-y-5">
       <PageHeader
         title="Pedidos recentes"
-        description="Acompanhamento de venda, pagamento, envio e prazo em ordem do mais novo para o mais antigo."
+        description="Do mais novo para o mais antigo, com atualização automática a cada 10 minutos."
         actions={
           <Button
             variant="secondary"

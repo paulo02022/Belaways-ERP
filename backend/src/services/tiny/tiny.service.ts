@@ -70,11 +70,24 @@ type TinyOrderRecord = {
     id?: string | number;
     numero?: string | number;
     nome?: string;
+    cliente?: {
+      nome?: string;
+    };
     situacao?: string;
     valor?: string | number;
+    total_pedido?: string | number;
     forma_envio?: string;
     data_pedido?: string;
     data_prevista?: string;
+    itens?: Array<{
+      item?: {
+        id_produto?: string | number;
+        codigo?: string;
+        descricao?: string;
+        quantidade?: string | number;
+        valor_unitario?: string | number;
+      };
+    }>;
   };
 };
 
@@ -236,19 +249,27 @@ const mapProduct = (record: TinyProductRecord, stock?: TinyProductStock | null):
   };
 };
 
-const mapOrder = (record: TinyOrderRecord): Order => {
+export const mapOrder = (record: TinyOrderRecord): Order => {
   const order = record.pedido ?? {};
+  const orderId = String(order.id ?? order.numero ?? crypto.randomUUID());
+  const items = (order.itens ?? []).map(({ item = {} }, index) => ({
+    productId: String(item.id_produto ?? item.codigo ?? `${orderId}-${index + 1}`),
+    sku: String(item.codigo ?? ''),
+    name: String(item.descricao ?? 'Produto sem nome'),
+    quantity: asNumber(item.quantidade),
+    unitPrice: asNumber(item.valor_unitario),
+  }));
 
   return {
-    id: String(order.id ?? order.numero ?? crypto.randomUUID()),
+    id: orderId,
     number: String(order.numero ?? order.id ?? ''),
-    customerName: String(order.nome ?? 'Cliente nao informado'),
+    customerName: String(order.nome ?? order.cliente?.nome ?? 'Cliente nao informado'),
     status: normalizeOrderStatus(order.situacao),
-    total: asNumber(order.valor),
+    total: asNumber(order.valor ?? order.total_pedido),
     shippingMethod: String(order.forma_envio ?? 'Nao informado'),
     createdAt: parseTinyDate(order.data_pedido),
     promisedAt: order.data_prevista ? parseTinyDate(order.data_prevista) : null,
-    items: [],
+    items,
   };
 };
 

@@ -106,6 +106,7 @@ export type DashboardOverview = {
   salesTrend: Array<{ label: string; pedidos: number; receita: number }>;
   stockByCategory: Array<{ category: string; estoque: number }>;
   ordersByStatus: Array<{ status: string; quantidade: number }>;
+  latestOrder: Order | null;
 };
 
 export type AuditLog = {

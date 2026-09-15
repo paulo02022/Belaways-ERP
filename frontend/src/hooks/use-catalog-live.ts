@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 
 import { endpoints } from '@/api/endpoints';
+import { automaticRefreshIntervalMs } from '@/constants/refresh';
 import { useAuth } from '@/hooks/use-auth';
 import { queryClient } from '@/lib/query-client';
 import { supabase } from '@/lib/supabase';
 
 const autoSyncRoles = new Set(['owner', 'admin', 'manager']);
-const syncIntervalMs = 60_000;
 const syncAttemptKey = 'belaways:last-catalog-sync-attempt';
 
 const refreshCatalogQueries = () =>
@@ -44,7 +44,7 @@ export const useCatalogLive = () => {
     const synchronize = async () => {
       if (running || document.visibilityState === 'hidden') return;
       const lastAttempt = Number(localStorage.getItem(syncAttemptKey) ?? 0);
-      if (Date.now() - lastAttempt < syncIntervalMs - 5_000) return;
+      if (Date.now() - lastAttempt < automaticRefreshIntervalMs - 5_000) return;
 
       running = true;
       localStorage.setItem(syncAttemptKey, String(Date.now()));
@@ -59,7 +59,7 @@ export const useCatalogLive = () => {
     };
 
     void synchronize();
-    const interval = window.setInterval(() => void synchronize(), syncIntervalMs);
+    const interval = window.setInterval(() => void synchronize(), automaticRefreshIntervalMs);
     const onVisibility = () => void synchronize();
     document.addEventListener('visibilitychange', onVisibility);
 
