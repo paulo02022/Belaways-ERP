@@ -44,18 +44,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(false);
       return undefined;
     }
+    const client = supabase;
 
     let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
+    client.auth.getSession().then(async ({ data, error }) => {
       if (mounted) {
-        setSession(data.session);
+        if (error) {
+          await client.auth.signOut({ scope: 'local' });
+          setSession(null);
+        } else {
+          setSession(data.session);
+        }
         setIsLoading(false);
       }
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    } = client.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
       setIsLoading(false);
     });

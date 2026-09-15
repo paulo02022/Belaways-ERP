@@ -131,7 +131,11 @@ Sirva `frontend/dist` pelo provedor escolhido e aponte `/api` para o backend. An
 
 ## Deploy na Vercel
 
-O projeto ja esta preparado para Vercel com frontend Vite em `frontend/dist` e API Express em `api/[...path].ts`.
+O projeto ja esta preparado para Vercel com frontend Vite em `frontend/dist` e API Express em `api/index.ts`.
+
+As chamadas `/api/:path*` sao encaminhadas para a funcao unica `api/index.ts`, que restaura o caminho original antes de entregar a requisicao ao Express. Isso inclui rotas aninhadas como `/api/sync/products`, `/api/products/:id` e `/api/orders/:id`.
+
+O frontend usa a chave local de sessao `belaways-erp-auth-v2`. No primeiro acesso depois desta atualizacao, usuarios que ainda possuam um refresh token legado precisam entrar novamente. Imagens de produtos sao carregadas somente por HTTPS a partir de CDNs conhecidas; origens inseguras ou que bloqueiam hotlink usam os fallbacks locais de Cabelo, Perfume e Skincare.
 
 Configuracao do projeto na Vercel:
 

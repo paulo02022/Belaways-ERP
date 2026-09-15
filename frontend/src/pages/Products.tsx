@@ -6,7 +6,6 @@ import {
   ChevronRight,
   Download,
   Eye,
-  ImageOff,
   PackageCheck,
   RefreshCw,
   Search,
@@ -20,6 +19,7 @@ import { Button } from '@/components/ui/Button';
 import { DataTable, type DataColumn } from '@/components/ui/DataTable';
 import { Input } from '@/components/ui/Input';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { ProductImage } from '@/components/ProductImage';
 import { Select } from '@/components/ui/Select';
 import { useProducts, useProductsSummary, useSyncProducts, type ProductFilters } from '@/hooks/use-data';
 import { downloadApiFile } from '@/api/client';
@@ -101,11 +101,14 @@ export const Products = () => {
       cell: (product) => (
         <div className="flex min-w-[20rem] items-center gap-3">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-            {product.imageUrl ? (
-              <img src={product.imageUrl} alt="" className="h-full w-full object-contain p-1" loading="lazy" />
-            ) : (
-              <ImageOff className="h-4 w-4 text-zinc-400" aria-hidden="true" />
-            )}
+            <ProductImage
+              imageUrl={product.imageUrl}
+              category={product.category}
+              productName={product.name}
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
           </div>
           <div className="min-w-0">
             <p className="line-clamp-2 font-semibold leading-5 text-zinc-950 dark:text-white">{product.name}</p>

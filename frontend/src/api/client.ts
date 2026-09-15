@@ -28,7 +28,13 @@ const getAccessToken = async () => {
 
   const {
     data: { session },
+    error,
   } = await supabase.auth.getSession();
+
+  if (error) {
+    await supabase.auth.signOut({ scope: 'local' });
+    throw new Error('Sua sessão expirou. Entre novamente para continuar.');
+  }
 
   return session?.access_token;
 };

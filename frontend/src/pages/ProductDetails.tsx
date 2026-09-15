@@ -3,7 +3,6 @@ import {
   Barcode,
   Boxes,
   ClipboardEdit,
-  ImageOff,
   Link as LinkIcon,
   PackageCheck,
   Ruler,
@@ -16,6 +15,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { ProductImage } from '@/components/ProductImage';
 import { useProduct } from '@/hooks/use-data';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
@@ -60,14 +60,13 @@ export const ProductDetails = () => {
         <Card>
           <CardContent>
             <div className="flex aspect-square items-center justify-center rounded-lg bg-zinc-50 p-6 dark:bg-zinc-950">
-              {product.imageUrl ? (
-                <img src={product.imageUrl} alt={product.name} className="max-h-full max-w-full object-contain" />
-              ) : (
-                <div className="flex flex-col items-center gap-3 text-zinc-400">
-                  <ImageOff className="h-10 w-10" aria-hidden="true" />
-                  <span className="text-sm">Imagem nao encontrada no Tiny</span>
-                </div>
-              )}
+              <ProductImage
+                imageUrl={product.imageUrl}
+                category={product.category}
+                productName={product.name}
+                alt={product.name}
+                className="h-full w-full rounded-md object-contain"
+              />
             </div>
           </CardContent>
         </Card>

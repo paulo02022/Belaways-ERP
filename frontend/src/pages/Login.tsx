@@ -2,6 +2,7 @@ import { AlertCircle, ArrowRight, LockKeyhole } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
+import loginStudio from '@/assets/belaways-login-studio.webp';
 import logo from '@/assets/belaways-logo.png';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -35,10 +36,10 @@ export const Login = () => {
   };
 
   return (
-    <main className="grid min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-white lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="flex min-h-screen items-center justify-center px-6 py-10">
+    <main className="grid min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-white lg:grid-cols-[minmax(30rem,0.88fr)_minmax(0,1.12fr)]">
+      <section className="order-2 flex items-center justify-center px-6 py-10 lg:order-1 lg:min-h-screen">
         <div className="w-full max-w-md">
-          <img src={logo} alt="Belaways" className="mb-10 h-12 w-auto object-contain" />
+          <img src={logo} alt="Belaways" className="mb-8 h-12 w-auto object-contain lg:mb-10" />
           <div className="mb-8">
             <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-200">
               <LockKeyhole className="h-5 w-5" aria-hidden="true" />
@@ -74,13 +75,24 @@ export const Login = () => {
         </div>
       </section>
 
-      <section className="hidden min-h-screen border-l border-zinc-200 bg-white p-10 dark:border-zinc-800 dark:bg-zinc-900 lg:flex lg:flex-col lg:justify-between">
-        <div />
-        <div>
-          <p className="text-sm font-medium text-brand-700 dark:text-brand-200">Belaways Intelligence</p>
-          <h2 className="mt-3 max-w-xl text-3xl font-semibold tracking-normal text-zinc-950 dark:text-white">
-            Operação diária com dados centralizados, alerta cedo e decisão rápida.
+      <section className="relative order-1 h-52 overflow-hidden border-b border-zinc-200 bg-[#6d153f] lg:order-2 lg:h-auto lg:min-h-screen lg:border-b-0 lg:border-l dark:border-zinc-800">
+        <img
+          src={loginStudio}
+          alt="Composição de produtos das categorias cabelo, perfume e skincare"
+          className="absolute inset-0 h-full w-full object-cover object-[62%_58%] lg:object-center"
+          fetchPriority="high"
+        />
+        <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
+        <div className="absolute inset-x-0 bottom-0 p-5 text-white lg:p-10 xl:p-14">
+          <p className="text-xs font-semibold uppercase">Belaways Intelligence</p>
+          <h2 className="mt-2 max-w-xl text-xl font-semibold leading-tight lg:mt-3 lg:text-3xl">
+            Cabelo, perfume e skincare em uma operação que acompanha o ritmo da loja.
           </h2>
+          <div className="mt-5 hidden border-t border-white/30 pt-4 text-xs font-medium text-white/85 sm:flex sm:gap-6">
+            <span>Catálogo ativo</span>
+            <span>Pedidos recentes</span>
+            <span>Estoque monitorado</span>
+          </div>
         </div>
       </section>
     </main>
